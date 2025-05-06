@@ -29,6 +29,7 @@ public class BattleShipGame {
     private Stage stageClose;
     private boolean gameOver = false;
     public  BorderPane root = new BorderPane();
+    private GridPane controlPanel = new GridPane();
 
     public static void launchGame(Player player) {
 
@@ -52,7 +53,7 @@ public class BattleShipGame {
         boardsBox.setAlignment(Pos.CENTER);
 
 // Панель керування
-        GridPane controlPanel = new GridPane();
+
         controlPanel.setAlignment(Pos.CENTER);
         controlPanel.setHgap(10);
         controlPanel.setVgap(10);
@@ -106,13 +107,24 @@ public class BattleShipGame {
 
 // Додаємо все в root
         Button shufleButton = new Button("New ships arrangement");
-        shufleButton.setAlignment(Pos.BOTTOM_LEFT);
+        shufleButton.setAlignment(Pos.CENTER);
         shufleButton.setOnAction(e -> {
           startGame();
         });
-        root.setLeft(shufleButton);
+
+        Button OkButton = new Button("Ok");
+        OkButton.setAlignment(Pos.CENTER);
+        OkButton.setOnAction(e -> {
+            root.setBottom(null);
+            root.setBottom(controlPanel);
+        });
+        VBox startButtons = new VBox(10); // 10 — відступ між кнопками
+        startButtons.setAlignment(Pos.CENTER);
+        startButtons.setPadding(new Insets(10));
+        startButtons.getChildren().addAll(shufleButton, OkButton);
+        root.setBottom(startButtons);
+
         root.setCenter(boardsBox);
-        root.setBottom(controlPanel);
 
         //root.setLeft(playerBox);
         //root.setRight(enemyBox);
@@ -131,7 +143,7 @@ public class BattleShipGame {
 
     private void handleCellClick(int row, int col,int choise,boolean bot) {
         //startNo = true;
-        root.setLeft(null);
+
         if (choise == 0) {
             if (board[row][col] == 1) {
                 EnemyWin = EnemyWin + 1;

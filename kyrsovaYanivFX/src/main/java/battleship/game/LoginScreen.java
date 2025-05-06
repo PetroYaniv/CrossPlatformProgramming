@@ -51,14 +51,30 @@ public class LoginScreen {
 
 
             String playerName = playerNameField.getText();
+            Repository _repos;
+            _repos = new DataBaseRepository(
+                    new DataBaseConnector("BattleShipDB")
+            );
 
-            Player player = new Player(playerName);
+            if(!_repos.isPlayer(playerName)) {
+                Player player = _repos.getPlayer(playerName);
+                System.out.println(player.toString());
+                // Закрити поточне вікно
+                primaryStage.close();
 
-            // Закрити поточне вікно
-            primaryStage.close();
+                // Запустити гру
+                BattleShipGame.launchGame(player);
+            }
+            else {
+                Player player = new Player(playerName);
+                System.out.println(player.toString());
+                // Закрити поточне вікно
+                primaryStage.close();
 
-            // Запустити гру
-            BattleShipGame.launchGame(player);
+                // Запустити гру
+                BattleShipGame.launchGame(player);
+            }
+
 
         });
 

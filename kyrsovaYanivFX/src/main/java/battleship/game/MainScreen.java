@@ -1,12 +1,15 @@
 package battleship.game;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
+import java.util.List;
 
 public class MainScreen extends Application {
 
@@ -36,6 +39,17 @@ public class MainScreen extends Application {
         startWithPlayer.setOnAction(e -> {
             primaryStage.close();
             LoginWithTwoPlayer.launchLogin();
+        });
+        tableOfPlayer.setOnAction(e -> {
+            Repository _repos;
+            _repos = new DataBaseRepository(
+                    new DataBaseConnector("BattleShipDB"));
+
+            List<Player> players = _repos.getAllPlayers();
+            for (Player player : players) {
+
+                System.out.println(player.toString());
+            }
         });
        // Label labelPlayerInfo = new Label("Enter player login information:");
         grid.add(startWithComputer, 0, 0);
