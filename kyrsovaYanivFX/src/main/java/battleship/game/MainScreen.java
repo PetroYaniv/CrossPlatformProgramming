@@ -1,15 +1,15 @@
 package battleship.game;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
 import javafx.scene.layout.*;
+import javafx.scene.image.*;
 import javafx.stage.Stage;
 
-import java.util.List;
+import java.net.URL;
 
 public class MainScreen extends Application {
 
@@ -24,10 +24,27 @@ public class MainScreen extends Application {
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
+        Image backgroundImage = new Image(getClass()
+                .getResource("/battleship/game/back02.png").toExternalForm());
+
+
+
+// Створення фону
+        BackgroundImage bgImage = new BackgroundImage(
+                backgroundImage,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(100, 100, true, true, true, true)
+        );
+
+
+
         Button startWithComputer = new Button("Start game with computer");
         Button startWithPlayer = new Button("Start game with player");
         Button tableOfPlayer = new Button("Show table of player");
         Button _close = new Button("Close the game");
+        grid.setBackground(new Background(bgImage));
         // Текстові поля та мітки
         startWithComputer.setOnAction(e -> {
             primaryStage.close();
@@ -44,7 +61,7 @@ public class MainScreen extends Application {
             primaryStage.close();
             TableOfPlayers.launchGame();
         });
-       // Label labelPlayerInfo = new Label("Enter player login information:");
+
         grid.add(startWithComputer, 0, 0);
         grid.add(startWithPlayer, 0, 2);
         grid.add(tableOfPlayer, 0, 4);
@@ -54,6 +71,7 @@ public class MainScreen extends Application {
 
 
         Scene scene = new Scene(grid, 500, 300);
+
         primaryStage.setScene(scene);
         primaryStage.show();
     }

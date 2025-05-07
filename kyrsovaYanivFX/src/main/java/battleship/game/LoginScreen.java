@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -30,10 +31,14 @@ public class LoginScreen {
 
         // Текстові поля та мітки
         Label labelPlayerInfo = new Label("Enter player login information:");
+        labelPlayerInfo.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         grid.add(labelPlayerInfo, 0, 0, 2, 1);
 
 
         Label labelName = new Label("Enter player name:");
+        labelName.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         grid.add(labelName, 0, 2);
 
         TextField playerNameField = new TextField();
@@ -57,6 +62,20 @@ public class LoginScreen {
         });
 
         hbBtn.getChildren().addAll(loginButton, returnButton);
+        Image backgroundImage = new Image(getClass()
+                .getResource("/battleship/game/back01.png").toExternalForm());
+
+
+
+// Створення фону
+        BackgroundImage bgImage = new BackgroundImage(
+                backgroundImage,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(100, 100, true, true, true, true)
+        );
+        grid.setBackground(new Background(bgImage));
         grid.add(hbBtn, 0, 4, 2, 1);
         // Обробка натискання
         loginButton.setOnAction(e -> {
@@ -70,8 +89,7 @@ public class LoginScreen {
 
             if(!_repos.isPlayer(playerName)) {
                 Player player = _repos.getPlayer(playerName);
-                System.out.println(player.toString());
-                // Закрити поточне вікно
+
                 primaryStage.close();
 
                 // Запустити гру
@@ -79,8 +97,7 @@ public class LoginScreen {
             }
             else {
                 Player player = new Player(playerName);
-                System.out.println(player.toString());
-                // Закрити поточне вікно
+
                 primaryStage.close();
 
                 // Запустити гру

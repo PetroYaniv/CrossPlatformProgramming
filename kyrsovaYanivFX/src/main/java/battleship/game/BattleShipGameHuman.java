@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -68,8 +69,12 @@ public class BattleShipGameHuman {
 
 // Елементи керування
         Label enterHitX = new Label("Enter OX:");
+        enterHitX.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         TextField _hitX = new TextField();
         Label enterHitY = new Label("Enter OY:");
+        enterHitY.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         TextField _hitY = new TextField();
         Button enterHitButton = new Button("Enter Hit");
         Button randomHitButton = new Button("Random Hit");
@@ -177,6 +182,7 @@ public class BattleShipGameHuman {
                         }
                     }
                     isGameStart=true;
+                    root.setTop(null);
                     root.setBottom(null);
                     root.setBottom(controlPanel);
                 }
@@ -208,12 +214,30 @@ public class BattleShipGameHuman {
         leftButtons.setPadding(new Insets(10));
         leftButtons.getChildren().addAll(shufleButton, OkButton,horizontalButton,resetButton);
 
-
+        Label putShip = new Label("Please deploy your ships.");
+        putShip.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
+        putShip.setFont(Font.font(16));
+        putShip.setAlignment(Pos.TOP_CENTER);
+        root.setTop(putShip);
         root.setBottom(leftButtons);
 
 
         root.setCenter(boardsBox);
+        Image backgroundImage = new Image(getClass()
+                .getResource("/battleship/game/back03.png").toExternalForm());
 
+
+
+// Створення фону
+        BackgroundImage bgImage = new BackgroundImage(
+                backgroundImage,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(100, 100, true, true, true, true)
+        );
+        root.setBackground(new Background(bgImage));
 
         Scene scene = new Scene(root, 1300, 750);
         stage.setScene(scene);
@@ -398,6 +422,8 @@ public class BattleShipGameHuman {
 
         for (int col = 0; col < SIZE; col++) {
             Label label = new Label(String.valueOf((col)));
+            label.setStyle( "-fx-text-fill: red;"+
+                    "-fx-font-weight: bold;");
             label.setMinSize(50, 30);
             label.setAlignment(Pos.CENTER);
             grid.add(label, col + 1, 0); // зсув на 1 вправо
@@ -406,6 +432,8 @@ public class BattleShipGameHuman {
 
         for (int row = 0; row < SIZE; row++) {
             Label label = new Label(String.valueOf(row));
+            label.setStyle( "-fx-text-fill: red;"+
+                    "-fx-font-weight: bold;");
             label.setMinSize(30, 50);
             label.setAlignment(Pos.CENTER_RIGHT);
             grid.add(label, 0, row + 1); // зсув на 1 вниз
@@ -425,14 +453,18 @@ public class BattleShipGameHuman {
                             placeShipsClick(1, finalRow, finalCol, horizontalVert);
                         } else {
                             if (whoMakeChoise) {
+                                if(board[finalRow][finalCol] !=2&&board[finalRow][finalCol] !=3){
                                 handleCellClick(finalRow, finalCol, 0);
                                 whoMakeChoise = !whoMakeChoise;
-                                player1MakeChoise = !player1MakeChoise;
+                                player1MakeChoise = !player1MakeChoise;}
                             } else {
                                 showAlert("Error", playerAName + " makes a move");
                             }
                         }
+                    } else {
+                        showAlert("Error", "It isn`t your turn");
                     }
+
                             });
                     buttons[finalRow][finalCol] = cell;
                 } else {
@@ -443,13 +475,16 @@ public class BattleShipGameHuman {
                                 placeShipsClick(0, finalRow, finalCol, horizontalVert);
                             } else {
                                 if (!whoMakeChoise) {
+                                    if(boardEnemy[finalRow][finalCol] !=2&&boardEnemy[finalRow][finalCol] !=3){
                                     handleCellClick(finalRow, finalCol, 1);
                                     whoMakeChoise = !whoMakeChoise;
-                                    player1MakeChoise = !player1MakeChoise;
+                                    player1MakeChoise = !player1MakeChoise;}
                                 } else {
                                     showAlert("Error", playerBName + " makes a move");
                                 }
                             }
+                        }else {
+                            showAlert("Error", "It isn`t your turn");
                         }
                     });
                     buttonsEnemy[finalRow][finalCol] = cell;
@@ -460,6 +495,8 @@ public class BattleShipGameHuman {
         }
 
         Label boardTitle = new Label(title);
+        boardTitle.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         boardTitle.setFont(Font.font(16));
         boardTitle.setAlignment(Pos.CENTER);
         VBox boardBox = new VBox(5, boardTitle, grid);

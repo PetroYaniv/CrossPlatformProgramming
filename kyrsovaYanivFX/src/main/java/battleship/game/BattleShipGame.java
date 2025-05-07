@@ -8,6 +8,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -64,21 +65,25 @@ public class BattleShipGame {
         controlPanel.setPadding(new Insets(10));
         resetBoard(1);
         placeShips(1);
-// Елементи керування
+
         Label enterHitX = new Label("Enter OX:");
+        enterHitX.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         TextField _hitX = new TextField();
         Label enterHitY = new Label("Enter OY:");
+        enterHitY.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         TextField _hitY = new TextField();
         Button enterHitButton = new Button("Enter Hit");
         Button randomHitButton = new Button("Random Hit");
-// Розміщення по сітці
+
         controlPanel.add(enterHitX, 0, 0);
         controlPanel.add(_hitX, 1, 0);
         controlPanel.add(enterHitY, 0, 1);
         controlPanel.add(_hitY, 1, 1);
         controlPanel.add(enterHitButton, 0, 2); // кнопка на всю ширину
         controlPanel.add(randomHitButton, 1, 2);
-// Обробка натискання кнопки
+
         enterHitButton.setOnAction(e -> {
             try {
                 int X = Integer.parseInt(_hitX.getText());
@@ -135,6 +140,7 @@ public class BattleShipGame {
             if(countShip<6) {showAlert("Error", "You haven`t enough ships.");}
             else{
                 isGameStart = true;
+                root.setTop(null);
             root.setBottom(null);
             root.setBottom(controlPanel);}
         });
@@ -152,19 +158,32 @@ public class BattleShipGame {
 
         root.setCenter(boardsBox);
 
-        //root.setLeft(playerBox);
-        //root.setRight(enemyBox);
+        Label putShip = new Label("Please deploy your ships.");
+        putShip.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
+        putShip.setFont(Font.font(16));
+        putShip.setAlignment(Pos.TOP_CENTER);
+        root.setTop(putShip);
+        Image backgroundImage = new Image(getClass()
+                .getResource("/battleship/game/back03.png").toExternalForm());
 
-        // root.setRight(boardGridEnemy);
-       // root.setLeft(boardGrid);
-        //root.setBottom(controlPanel);
 
+
+
+        BackgroundImage bgImage = new BackgroundImage(
+                backgroundImage,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(100, 100, true, true, true, true)
+        );
+        root.setBackground(new Background(bgImage));
         Scene scene = new Scene(root, 1300, 700);
         stage.setScene(scene);
         stageClose = stage;
         stageClose.show();
 
-        //resetBoard();
+
     }
 
     private void handleCellClick(int row, int col,int choise,boolean bot) {
@@ -348,17 +367,21 @@ public class BattleShipGame {
         grid.setHgap(0);
         grid.setVgap(0);
 
-        // Додаємо координати зверху (A–J)
+        // Додаємо координати зверху (0–9)
         for (int col = 0; col < SIZE; col++) {
             Label label = new Label(String.valueOf((col)));
+            label.setStyle( "-fx-text-fill: red;"+
+                    "-fx-font-weight: bold;");
             label.setMinSize(50, 30);
             label.setAlignment(Pos.CENTER);
             grid.add(label, col + 1, 0); // зсув на 1 вправо
         }
 
-        // Додаємо координати зліва (1–10) та кнопки
+        // Додаємо координати зліва (0–9) та кнопки
         for (int row = 0; row < SIZE; row++) {
             Label label = new Label(String.valueOf(row));
+            label.setStyle( "-fx-text-fill: red;"+
+                    "-fx-font-weight: bold;");
             label.setMinSize(30, 50);
             label.setAlignment(Pos.CENTER_RIGHT);
             grid.add(label, 0, row + 1); // зсув на 1 вниз
@@ -371,7 +394,7 @@ public class BattleShipGame {
                 int finalCol = col;
 
                 if (isPlayer) {
-                    cell.setOnAction(e -> placeShipClick(finalRow,finalCol,horizontalVetr));
+                    cell.setOnAction(e -> {if(!isGameStart){placeShipClick(finalRow,finalCol,horizontalVetr);}});
                     buttons[finalRow][finalCol] = cell;
                 } else {
                     cell.setOnAction(e -> {
@@ -386,6 +409,8 @@ public class BattleShipGame {
         }
 
         Label boardTitle = new Label(title);
+        boardTitle.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         boardTitle.setFont(Font.font(16));
         boardTitle.setAlignment(Pos.CENTER);
         VBox boardBox = new VBox(5, boardTitle, grid);

@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -30,15 +31,21 @@ public class LoginWithTwoPlayer {
 
         // Текстові поля та мітки
         Label labelPlayerInfo = new Label("Enter player login information:");
+        labelPlayerInfo.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         grid.add(labelPlayerInfo, 0, 0, 2, 1);
 
 
         Label labelNameA = new Label("Enter player 1 name:");
+        labelNameA.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         grid.add(labelNameA, 0, 2);
 
         TextField playerNameFieldA = new TextField();
         grid.add(playerNameFieldA, 1, 2);
         Label labelNameB = new Label("Enter player 2 name:");
+        labelNameB.setStyle( "-fx-text-fill: red;"+
+                "-fx-font-weight: bold;");
         grid.add(labelNameB, 0, 3);
 
         TextField playerNameFieldB = new TextField();
@@ -59,6 +66,20 @@ public class LoginWithTwoPlayer {
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_CENTER);
         hbBtn.getChildren().addAll(loginButton,returnButton);
+        Image backgroundImage = new Image(getClass()
+                .getResource("/battleship/game/back01.png").toExternalForm());
+
+
+
+// Створення фону
+        BackgroundImage bgImage = new BackgroundImage(
+                backgroundImage,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(100, 100, true, true, true, true)
+        );
+        grid.setBackground(new Background(bgImage));
         grid.add(hbBtn, 0, 5, 2, 1);
 
         // Обробка натискання
@@ -69,46 +90,48 @@ public class LoginWithTwoPlayer {
 
 
             String playerNameB = playerNameFieldB.getText();
-
-            Repository _repos;
-            _repos = new DataBaseRepository(
-                    new DataBaseConnector("BattleShipDB")
-            );
-            if(!_repos.isPlayer(playerNameA) && !_repos.isPlayer(playerNameB)) {
-                Player playerA = _repos.getPlayer(playerNameA);
-                Player playerB = _repos.getPlayer(playerNameB);
-                primaryStage.close();
-
-                // Запустити гру
-                BattleShipGameHuman.launchGame(playerA,playerB);
-            }
-            else if(!_repos.isPlayer(playerNameA) && _repos.isPlayer(playerNameB)){
-                Player playerA = _repos.getPlayer(playerNameA);
-                Player playerB =  new Player(playerNameB);
-                primaryStage.close();
-
-                // Запустити гру
-                BattleShipGameHuman.launchGame(playerA,playerB);
-            }
-            else if(_repos.isPlayer(playerNameA) && !_repos.isPlayer(playerNameB)){
-                Player playerA = new Player(playerNameA);
-                Player playerB =  _repos.getPlayer(playerNameB);
-                primaryStage.close();
-
-                // Запустити гру
-                BattleShipGameHuman.launchGame(playerA,playerB);
+            if (playerNameA.isEmpty() || playerNameB.isEmpty()) {
+                showAlert("Error", "Please enter a player name!");
+            } else if (playerNameA.equals(playerNameB)|| playerNameB.equals(playerNameA)) {
+                showAlert("Error", "Please enter a diferent player name!");
             }
             else {
+                Repository _repos;
+                _repos = new DataBaseRepository(
+                        new DataBaseConnector("BattleShipDB")
+                );
+                if (!_repos.isPlayer(playerNameA) && !_repos.isPlayer(playerNameB)) {
+                    Player playerA = _repos.getPlayer(playerNameA);
+                    Player playerB = _repos.getPlayer(playerNameB);
+                    primaryStage.close();
 
-                Player playerA = new Player(playerNameA);
-                Player playerB = new Player(playerNameB);
-                primaryStage.close();
+                    // Запустити гру
+                    BattleShipGameHuman.launchGame(playerA, playerB);
+                } else if (!_repos.isPlayer(playerNameA) && _repos.isPlayer(playerNameB)) {
+                    Player playerA = _repos.getPlayer(playerNameA);
+                    Player playerB = new Player(playerNameB);
+                    primaryStage.close();
 
-                // Запустити гру
-                BattleShipGameHuman.launchGame(playerA,playerB);
+                    // Запустити гру
+                    BattleShipGameHuman.launchGame(playerA, playerB);
+                } else if (_repos.isPlayer(playerNameA) && !_repos.isPlayer(playerNameB)) {
+                    Player playerA = new Player(playerNameA);
+                    Player playerB = _repos.getPlayer(playerNameB);
+                    primaryStage.close();
+
+                    // Запустити гру
+                    BattleShipGameHuman.launchGame(playerA, playerB);
+                } else {
+
+                    Player playerA = new Player(playerNameA);
+                    Player playerB = new Player(playerNameB);
+                    primaryStage.close();
+
+                    // Запустити гру
+                    BattleShipGameHuman.launchGame(playerA, playerB);
+                }
+
             }
-
-
 
         });
 
