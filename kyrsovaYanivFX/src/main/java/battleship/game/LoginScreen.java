@@ -43,9 +43,21 @@ public class LoginScreen {
         Button loginButton = new Button("Login");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_CENTER);
-        hbBtn.getChildren().add(loginButton);
-        grid.add(hbBtn, 0, 4, 2, 1);
 
+
+        Button returnButton = new Button("Return");
+
+        returnButton.setOnAction(e -> {
+            MainScreen mainScreen = new MainScreen();
+            Stage stage2 = new Stage();
+            mainScreen.start(stage2);
+            primaryStage.close();
+
+
+        });
+
+        hbBtn.getChildren().addAll(loginButton, returnButton);
+        grid.add(hbBtn, 0, 4, 2, 1);
         // Обробка натискання
         loginButton.setOnAction(e -> {
 

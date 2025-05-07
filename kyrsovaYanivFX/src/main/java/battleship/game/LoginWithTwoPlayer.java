@@ -44,10 +44,21 @@ public class LoginWithTwoPlayer {
         TextField playerNameFieldB = new TextField();
         grid.add(playerNameFieldB, 1, 3);
         // Кнопка логіну
+        Button returnButton = new Button("Return");
+
+        returnButton.setOnAction(e -> {
+            MainScreen mainScreen = new MainScreen();
+            Stage stage2 = new Stage();
+            mainScreen.start(stage2);
+            primaryStage.close();
+
+
+        });
+
         Button loginButton = new Button("Login");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_CENTER);
-        hbBtn.getChildren().add(loginButton);
+        hbBtn.getChildren().addAll(loginButton,returnButton);
         grid.add(hbBtn, 0, 5, 2, 1);
 
         // Обробка натискання
@@ -56,16 +67,48 @@ public class LoginWithTwoPlayer {
 
             String playerNameA = playerNameFieldA.getText();
 
-            Player playerA = new Player(playerNameA);
+
             String playerNameB = playerNameFieldB.getText();
 
-            Player playerB = new Player(playerNameB);
+            Repository _repos;
+            _repos = new DataBaseRepository(
+                    new DataBaseConnector("BattleShipDB")
+            );
+            if(!_repos.isPlayer(playerNameA) && !_repos.isPlayer(playerNameB)) {
+                Player playerA = _repos.getPlayer(playerNameA);
+                Player playerB = _repos.getPlayer(playerNameB);
+                primaryStage.close();
 
-            // Закрити поточне вікно
-            primaryStage.close();
+                // Запустити гру
+                BattleShipGameHuman.launchGame(playerA,playerB);
+            }
+            else if(!_repos.isPlayer(playerNameA) && _repos.isPlayer(playerNameB)){
+                Player playerA = _repos.getPlayer(playerNameA);
+                Player playerB =  new Player(playerNameB);
+                primaryStage.close();
 
-            // Запустити гру
-            BattleShipGameHuman.launchGame(playerA,playerB);
+                // Запустити гру
+                BattleShipGameHuman.launchGame(playerA,playerB);
+            }
+            else if(_repos.isPlayer(playerNameA) && !_repos.isPlayer(playerNameB)){
+                Player playerA = new Player(playerNameA);
+                Player playerB =  _repos.getPlayer(playerNameB);
+                primaryStage.close();
+
+                // Запустити гру
+                BattleShipGameHuman.launchGame(playerA,playerB);
+            }
+            else {
+
+                Player playerA = new Player(playerNameA);
+                Player playerB = new Player(playerNameB);
+                primaryStage.close();
+
+                // Запустити гру
+                BattleShipGameHuman.launchGame(playerA,playerB);
+            }
+
+
 
         });
 

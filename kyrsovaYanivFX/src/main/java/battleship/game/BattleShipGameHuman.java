@@ -30,8 +30,13 @@ public class BattleShipGameHuman {
     private Stage stageClose;
     private boolean gameOver = false;
     private boolean player1MakeChoise = false;
+    private boolean isGameStart = false;
     private boolean whoMakeChoise = false;
     public  BorderPane root = new BorderPane();
+    private Player player_A;
+    private  int countShip = 0;
+    private Player player_B;
+    private boolean horizontalVert = true;
 
     public static void launchGame(Player playerA, Player playerB) {
         Platform.runLater(() -> {
@@ -44,7 +49,8 @@ public class BattleShipGameHuman {
         stage.setTitle("Battle Ship Game");
         playerAName = playerA.getName();
         playerBName = playerB.getName();
-
+        player_A = playerA;
+       player_B = playerB;
 
 
         VBox playerBoard = createLabeledBoard(playerAName+" Field", buttons, true);
@@ -88,6 +94,7 @@ public class BattleShipGameHuman {
                     return;
                 }
                 if(!whoMakeChoise) {
+                    player1MakeChoise = !player1MakeChoise;
                     whoMakeChoise = !whoMakeChoise;
                 if ((boardEnemy[Y][X] == 2 || boardEnemy[Y][X] == 3)) {
                     showAlert("Invalid", "These coordinates were already hit.");
@@ -97,6 +104,7 @@ public class BattleShipGameHuman {
                 }
                 }
                 else{
+                    player1MakeChoise = !player1MakeChoise;
                     whoMakeChoise = !whoMakeChoise;
                     if ((board[Y][X] == 2 || board[Y][X] == 3)) {
                         showAlert("Invalid", "These coordinates were already hit.");
@@ -111,6 +119,7 @@ public class BattleShipGameHuman {
         });
         randomHitButton.setOnAction(e -> {
             Random rand = new Random();
+            player1MakeChoise = !player1MakeChoise;
             if(!whoMakeChoise) {
                 whoMakeChoise = !whoMakeChoise;
                 int r = rand.nextInt(SIZE);
@@ -136,46 +145,68 @@ public class BattleShipGameHuman {
 
         Button shufleButton = new Button("New ships arrangement");
         shufleButton.setOnAction(e -> {
+            countShip = 6;
             resetBoard(1);
             placeShips(1);
         });
 
         Button OkButton = new Button("Confirm");
         OkButton.setOnAction(e -> {
-
-            if(!player1MakeChoise) {
-                resetBoard(2);
-                placeShips(2);
-                for (int i = 0; i < SIZE; i++) {
-                    for (int j = 0; j < SIZE; j++) {
-                        buttons[i][j].setStyle("-fx-background-color: CYAN;");
-                    }
-                }
-                player1MakeChoise = true;
-                shufleButton.setOnAction(ee -> {
-                resetBoard(2);
-                placeShips(2);
-                });
-            }
+            if(countShip<6) {showAlert("Error", "You haven`t enough ships.");}
             else {
-                for (int i = 0; i < SIZE; i++) {
-                    for (int j = 0; j < SIZE; j++) {
-                        buttonsEnemy[i][j].setStyle("-fx-background-color: CYAN;");
+                if (!player1MakeChoise) {
+                    countShip = 0;
+                    //resetBoard(2);
+                    //placeShips(2);
+                    for (int i = 0; i < SIZE; i++) {
+                        for (int j = 0; j < SIZE; j++) {
+                            buttons[i][j].setStyle("-fx-background-color: CYAN;");
+                        }
                     }
-                }
+                    player1MakeChoise = true;
+                    shufleButton.setOnAction(ee -> {
+
+                        resetBoard(2);
+
+                        placeShips(2);
+                    });
+                } else {
+                    for (int i = 0; i < SIZE; i++) {
+                        for (int j = 0; j < SIZE; j++) {
+                            buttonsEnemy[i][j].setStyle("-fx-background-color: CYAN;");
+                        }
+                    }
+                    isGameStart=true;
                     root.setBottom(null);
                     root.setBottom(controlPanel);
+                }
             }
 
 
         });
 
+        Button horizontalButton = new Button("Place ship horizontally");
+        horizontalButton.setAlignment(Pos.CENTER);
+        horizontalButton.setOnAction(e -> {
+            horizontalVert = !horizontalVert;
+            if (horizontalVert) {
+                horizontalButton.setText("Place ship horizontally");
+            }
+            else {
+                horizontalButton.setText("Place ship vertically");
+            }
+        });
+        Button resetButton = new Button("Reset field");
+        resetButton.setAlignment(Pos.CENTER);
+        resetButton.setOnAction(e -> {
 
-
-        VBox leftButtons = new VBox(10); // 10 — відступ між кнопками
+            if(!player1MakeChoise){resetBoard(1);}
+            else{resetBoard(2);}
+        });
+        HBox leftButtons = new HBox(10); // 10 — відступ між кнопками
         leftButtons.setAlignment(Pos.CENTER);
         leftButtons.setPadding(new Insets(10));
-        leftButtons.getChildren().addAll(shufleButton, OkButton);
+        leftButtons.getChildren().addAll(shufleButton, OkButton,horizontalButton,resetButton);
 
 
         root.setBottom(leftButtons);
@@ -189,7 +220,7 @@ public class BattleShipGameHuman {
         stageClose = stage;
         stageClose.show();
 
-        startGame();
+       // startGame();
     }
 
     private void handleCellClick(int row, int col,int choise) {
@@ -229,6 +260,8 @@ public class BattleShipGameHuman {
         if(PlayerWin==WIN){
             gameOver = true;
             showAlert("WIN", playerAName+" win.");
+            player_A.increaseVictory();
+            player_B.increaseDefeat();
             Stage stage = new Stage();
             MainScreen mainScreen = new MainScreen();
             mainScreen.start(stage);
@@ -239,6 +272,8 @@ public class BattleShipGameHuman {
         if(EnemyWin==WIN){
             gameOver = true;
             showAlert("WIN", playerBName+" win.");
+            player_A.increaseDefeat();
+            player_B.increaseVictory();
             Stage stage = new Stage();
             MainScreen mainScreen = new MainScreen();
             mainScreen.start(stage);
@@ -257,6 +292,7 @@ public class BattleShipGameHuman {
     }
 
     private void resetBoard(int choise) {
+        countShip = 0;
         if(choise == 1) {
             for (int row = 0; row < SIZE; row++) {
                 for (int col = 0; col < SIZE; col++) {
@@ -278,7 +314,7 @@ public class BattleShipGameHuman {
     }
 
     private void placeShips(int choise) {
-
+        countShip = 6;
         int[] shipSizes = {4, 3, 3, 2, 2, 1};
         Random rand = new Random();
         if(choise == 1) {
@@ -383,25 +419,37 @@ public class BattleShipGameHuman {
 
                 if (isPlayer) {
                     cell.setOnAction(e ->
-                            {
-                                if(whoMakeChoise){
-                                    handleCellClick(finalRow, finalCol, 0);
-                                    whoMakeChoise = !whoMakeChoise;
-                                }
-                                else{
-                                    showAlert("Error",playerAName+" makes a move");
-                                }
+                    {
+                        if(!player1MakeChoise){
+                        if (!isGameStart) {
+                            placeShipsClick(1, finalRow, finalCol, horizontalVert);
+                        } else {
+                            if (whoMakeChoise) {
+                                handleCellClick(finalRow, finalCol, 0);
+                                whoMakeChoise = !whoMakeChoise;
+                                player1MakeChoise = !player1MakeChoise;
+                            } else {
+                                showAlert("Error", playerAName + " makes a move");
+                            }
+                        }
+                    }
                             });
                     buttons[finalRow][finalCol] = cell;
                 } else {
                     cell.setOnAction(e ->
                     {
-                        if(!whoMakeChoise){
-                            handleCellClick(finalRow, finalCol, 1);
-                            whoMakeChoise = !whoMakeChoise;
-                        }
-                        else{
-                            showAlert("Error",playerBName+" makes a move");
+                        if(player1MakeChoise) {
+                            if (!isGameStart) {
+                                placeShipsClick(0, finalRow, finalCol, horizontalVert);
+                            } else {
+                                if (!whoMakeChoise) {
+                                    handleCellClick(finalRow, finalCol, 1);
+                                    whoMakeChoise = !whoMakeChoise;
+                                    player1MakeChoise = !player1MakeChoise;
+                                } else {
+                                    showAlert("Error", playerBName + " makes a move");
+                                }
+                            }
                         }
                     });
                     buttonsEnemy[finalRow][finalCol] = cell;
@@ -418,5 +466,52 @@ public class BattleShipGameHuman {
         boardBox.setAlignment(Pos.CENTER);
         return boardBox;
     }
+
+    private void placeShipsClick(int choise,int row,int col,boolean horizontal) {
+
+        int[] shipSizes = {4, 3, 3, 2, 2, 1};
+        Random rand = new Random();
+        if(choise == 1 && countShip<6) {
+
+                boolean placed = false;
+               int size = shipSizes[countShip];
+
+
+                    if (canPlaceShip(row, col, size, horizontal, 1)&& countShip<6) {
+                        for (int i = 0; i < size; i++) {
+                            int r = row + (horizontal ? 0 : i);
+                            int c = col + (horizontal ? i : 0);
+                            board[r][c] = 1;
+                            buttons[r][c].setStyle("-fx-background-color: GREY;"); // показати кораблі
+                        }
+                        placed = true;
+                    }
+                    if (placed){countShip++;}
+
+
+        }
+        else if (choise == 0 && countShip<6){
+
+                boolean placed = false;
+               int size = shipSizes[countShip];
+
+                    if (canPlaceShip(row, col, size, horizontal, 0)&& countShip<6) {
+                        for (int i = 0; i < size; i++) {
+                            int r = row + (horizontal ? 0 : i);
+                            int c = col + (horizontal ? i : 0);
+                            boardEnemy[r][c] = 1;
+                            buttonsEnemy[r][c].setStyle("-fx-background-color: GREY;"); // показати кораблі
+                        }
+                        placed = true;
+
+
+                    }
+            if (placed){countShip++;}
+        }
+        else{
+            showAlert("Error","You already have enought ship ");
+        }
+    }
+
 
 }

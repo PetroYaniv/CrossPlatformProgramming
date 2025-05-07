@@ -41,15 +41,8 @@ public class MainScreen extends Application {
             LoginWithTwoPlayer.launchLogin();
         });
         tableOfPlayer.setOnAction(e -> {
-            Repository _repos;
-            _repos = new DataBaseRepository(
-                    new DataBaseConnector("BattleShipDB"));
-
-            List<Player> players = _repos.getAllPlayers();
-            for (Player player : players) {
-
-                System.out.println(player.toString());
-            }
+            primaryStage.close();
+            TableOfPlayers.launchGame();
         });
        // Label labelPlayerInfo = new Label("Enter player login information:");
         grid.add(startWithComputer, 0, 0);
@@ -69,6 +62,7 @@ public class MainScreen extends Application {
 
     public static void main(String[] args) {
         launch(args);// ПОТІМ ВКЛЮЧИТИ!!!!!
-        //BattleShipGameHuman.launchGame();
+        //Player player = new Player("Alex");
+       //BattleShipGameHuman.launchGame();
     }
 }

@@ -30,6 +30,10 @@ public class BattleShipGame {
     private boolean gameOver = false;
     public  BorderPane root = new BorderPane();
     private GridPane controlPanel = new GridPane();
+    private Player player;
+    private int countShip=0;
+    private boolean horizontalVetr = true;
+    private boolean isGameStart = false;
 
     public static void launchGame(Player player) {
 
@@ -40,10 +44,10 @@ public class BattleShipGame {
         });
     }
 
-    public void start(Stage stage,Player player) {
+    public void start(Stage stage,Player _player) {
         stage.setTitle("Battle Ship Game");
-        playerName = player.getName();
-
+        playerName = _player.getName();
+        player = _player;
 
 
         VBox playerBoard = createLabeledBoard(playerName+" Field", buttons, true);
@@ -58,7 +62,8 @@ public class BattleShipGame {
         controlPanel.setHgap(10);
         controlPanel.setVgap(10);
         controlPanel.setPadding(new Insets(10));
-
+        resetBoard(1);
+        placeShips(1);
 // Елементи керування
         Label enterHitX = new Label("Enter OX:");
         TextField _hitX = new TextField();
@@ -109,19 +114,40 @@ public class BattleShipGame {
         Button shufleButton = new Button("New ships arrangement");
         shufleButton.setAlignment(Pos.CENTER);
         shufleButton.setOnAction(e -> {
-          startGame();
+            countShip = 6;
+          resetBoard(0);
+          placeShips(0);
         });
-
+        Button horizontalButton = new Button("Place ship horizontally");
+        horizontalButton.setAlignment(Pos.CENTER);
+        horizontalButton.setOnAction(e -> {
+            horizontalVetr = !horizontalVetr;
+            if (horizontalVetr) {
+                horizontalButton.setText("Place ship horizontally");
+            }
+            else {
+                horizontalButton.setText("Place ship vertically");
+            }
+        });
         Button OkButton = new Button("Ok");
         OkButton.setAlignment(Pos.CENTER);
         OkButton.setOnAction(e -> {
+            if(countShip<6) {showAlert("Error", "You haven`t enough ships.");}
+            else{
+                isGameStart = true;
             root.setBottom(null);
-            root.setBottom(controlPanel);
+            root.setBottom(controlPanel);}
         });
-        VBox startButtons = new VBox(10); // 10 — відступ між кнопками
+        Button resetButton = new Button("Reset field");
+        resetButton.setAlignment(Pos.CENTER);
+        resetButton.setOnAction(e -> {
+            countShip=0;
+            resetBoard(0);
+        });
+        HBox startButtons = new HBox(10); // 10 — відступ між кнопками
         startButtons.setAlignment(Pos.CENTER);
         startButtons.setPadding(new Insets(10));
-        startButtons.getChildren().addAll(shufleButton, OkButton);
+        startButtons.getChildren().addAll(shufleButton, OkButton,horizontalButton,resetButton);
         root.setBottom(startButtons);
 
         root.setCenter(boardsBox);
@@ -138,7 +164,7 @@ public class BattleShipGame {
         stageClose = stage;
         stageClose.show();
 
-        startGame();
+        //resetBoard();
     }
 
     private void handleCellClick(int row, int col,int choise,boolean bot) {
@@ -178,6 +204,7 @@ public class BattleShipGame {
         if(PlayerWin==WIN){
             gameOver = true;
             showAlert("WIN", "You win.");
+            player.increaseVictory();
             Stage stage = new Stage();
             MainScreen mainScreen = new MainScreen();
             mainScreen.start(stage);
@@ -188,6 +215,7 @@ public class BattleShipGame {
         if(EnemyWin==WIN){
             gameOver = true;
             showAlert("LOSE", "You lose.");
+            player.increaseDefeat();
             Stage stage = new Stage();
             MainScreen mainScreen = new MainScreen();
             mainScreen.start(stage);
@@ -207,65 +235,79 @@ public class BattleShipGame {
     }
 
     private void startGame() {
-        resetBoard();
-        placeShips();
+        resetBoard(1);
+        resetBoard(0);
+        placeShips(1);
     }
 
-    private void resetBoard() {
-        for (int row = 0; row < SIZE; row++) {
-            for (int col = 0; col < SIZE; col++) {
-                board[row][col] = 0;
-                buttons[row][col].setStyle("-fx-background-color: CYAN;");
-                buttons[row][col].setText("");
+    private void resetBoard(int choise) {
+        if (choise == 0) {
+            for (int row = 0; row < SIZE; row++) {
+                for (int col = 0; col < SIZE; col++) {
+                    board[row][col] = 0;
+                    buttons[row][col].setStyle("-fx-background-color: CYAN;");
+                    buttons[row][col].setText("");
+                }
             }
         }
-        for (int row = 0; row < SIZE; row++) {
-            for (int col = 0; col < SIZE; col++) {
-                boardEnemy[row][col] = 0;
-                buttonsEnemy[row][col].setStyle("-fx-background-color: CYAN;");
-                buttonsEnemy[row][col].setText("");
+        else {
+            for (int row = 0; row < SIZE; row++) {
+                for (int col = 0; col < SIZE; col++) {
+                    boardEnemy[row][col] = 0;
+                    buttonsEnemy[row][col].setStyle("-fx-background-color: CYAN;");
+                    buttonsEnemy[row][col].setText("");
+                }
             }
         }
     }
 
-    private void placeShips() {
+    private void placeShips(int choise) {
+        if (choise == 0) {
         int[] shipSizes = {4, 3, 3, 2, 2, 1};
         Random rand = new Random();
 
-        for (int size : shipSizes) {
-            boolean placed = false;
-            while (!placed) {
-                int row = rand.nextInt(SIZE);
-                int col = rand.nextInt(SIZE);
-                boolean horizontal = rand.nextBoolean();
 
-                if (canPlaceShip(row, col, size, horizontal,1)) {
-                    for (int i = 0; i < size; i++) {
-                        int r = row + (horizontal ? 0 : i);
-                        int c = col + (horizontal ? i : 0);
-                        board[r][c] = 1;
-                        buttons[r][c].setStyle("-fx-background-color: GREY;"); // показати кораблі
+            for (int size : shipSizes) {
+                boolean placed = false;
+                while (!placed) {
+                    int row = rand.nextInt(SIZE);
+                    int col = rand.nextInt(SIZE);
+                    boolean horizontal = rand.nextBoolean();
+
+                    if (canPlaceShip(row, col, size, horizontal, 1)) {
+                        for (int i = 0; i < size; i++) {
+                            int r = row + (horizontal ? 0 : i);
+                            int c = col + (horizontal ? i : 0);
+                            board[r][c] = 1;
+                            buttons[r][c].setStyle("-fx-background-color: GREY;"); // показати кораблі
+                        }
+                        placed = true;
                     }
-                    placed = true;
                 }
             }
-        }
-        for (int size : shipSizes) {
-            boolean placed = false;
-            while (!placed) {
-                int row = rand.nextInt(SIZE);
-                int col = rand.nextInt(SIZE);
-                boolean horizontal = rand.nextBoolean();
 
-                if (canPlaceShip(row, col, size, horizontal,0)) {
-                    for (int i = 0; i < size; i++) {
-                        int r = row + (horizontal ? 0 : i);
-                        int c = col + (horizontal ? i : 0);
-                        boardEnemy[r][c] = 1;
-                        buttonsEnemy[r][c].setStyle("-fx-background-color: CYAN;"); // показати кораблі
+        }
+        else {
+            int[] shipSizes = {4, 3, 3, 2, 2, 1};
+            Random rand = new Random();
+            for (int size : shipSizes) {
+                boolean placed = false;
+                while (!placed) {
+                    int row = rand.nextInt(SIZE);
+                    int col = rand.nextInt(SIZE);
+                    boolean horizontal = rand.nextBoolean();
+
+                    if (canPlaceShip(row, col, size, horizontal, 0)) {
+                        for (int i = 0; i < size; i++) {
+                            int r = row + (horizontal ? 0 : i);
+                            int c = col + (horizontal ? i : 0);
+                            boardEnemy[r][c] = 1;
+                            buttonsEnemy[r][c].setStyle("-fx-background-color: CYAN;"); // показати кораблі
+                        }
+                        placed = true;
                     }
-                    placed = true;
                 }
+
             }
         }
     }
@@ -329,10 +371,13 @@ public class BattleShipGame {
                 int finalCol = col;
 
                 if (isPlayer) {
-                    cell.setOnAction(e -> None());
+                    cell.setOnAction(e -> placeShipClick(finalRow,finalCol,horizontalVetr));
                     buttons[finalRow][finalCol] = cell;
                 } else {
-                    cell.setOnAction(e -> handleCellClick(finalRow, finalCol, 2, false));
+                    cell.setOnAction(e -> {
+                        if((boardEnemy[finalRow][finalCol] != 2 && boardEnemy[finalRow][finalCol] != 3)&& isGameStart){
+                            handleCellClick(finalRow, finalCol, 2, false);}
+                    });
                     buttonsEnemy[finalRow][finalCol] = cell;
                 }
 
@@ -347,5 +392,27 @@ public class BattleShipGame {
         boardBox.setAlignment(Pos.CENTER);
         return boardBox;
     }
+
+    private boolean placeShipClick(int row,int col,boolean horizontal) {
+        boolean placed = false;
+        int[] sizeShip = {4, 3, 3, 2, 2, 1};
+        if(countShip<6) {
+            int size = sizeShip[countShip];
+
+            if (canPlaceShip(row, col, size, horizontal,1) && countShip<sizeShip.length) {
+                for (int i = 0; i < size; i++) {
+                    int r = row + (horizontal ? 0 : i);
+                    int c = col + (horizontal ? i : 0);
+                    board[r][c] = 1;
+                    buttons[r][c].setStyle("-fx-background-color: GREY;"); // показати кораблі
+                }
+                placed = true;
+            }
+            if (placed) {countShip++;}
+        }
+        else{showAlert("Error","You have already enought ships");}
+            return placed;
+
+    };
 
 }
