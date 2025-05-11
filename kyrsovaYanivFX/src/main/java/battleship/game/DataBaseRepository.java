@@ -68,7 +68,7 @@ public class DataBaseRepository implements Repository {
             PreparedStatement preparedStatement =
                     conn.prepareStatement( "UPDATE Players " +
                             "SET PlayerWin = ?" +
-                            "WHERE PlayerName = ?");
+                            " WHERE PlayerName = ?");
             preparedStatement.setInt(1, player.getVictory());
             preparedStatement.setString(2, player.getName());
             updCount = preparedStatement.executeUpdate();
@@ -84,7 +84,7 @@ public class DataBaseRepository implements Repository {
             PreparedStatement preparedStatement =
                     conn.prepareStatement( "UPDATE Players " +
                             "SET PlayerDefeat = ?" +
-                            "WHERE PlayerName = ?");
+                            " WHERE PlayerName = ?");
             preparedStatement.setInt(1, player.getDefeat());
             preparedStatement.setString(2, player.getName());
             updCount = preparedStatement.executeUpdate();

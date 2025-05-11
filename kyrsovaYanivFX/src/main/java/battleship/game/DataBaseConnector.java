@@ -9,10 +9,11 @@ public class DataBaseConnector {
     private String dataBasePassword;
     private String driverClass;
     public DataBaseConnector(String dataBaseName) {
-        this.dataBaseUrl = "jdbc:h2:file:./" + dataBaseName;
-        this.dataBaseUser = "admin";
-        this.dataBasePassword = "";
-        this.driverClass = "org.h2.Driver";
+        this.dataBaseUrl = "jdbc:postgresql://dpg-d0g2jqi4d50c73fdas2g-a.frankfurt-postgres.render.com:5432/battleshipdb";
+        this.dataBaseUser = "petro";
+        this.dataBasePassword = "kuApQpuqAfAysIye2gkhZLpHvD8HmPgv";
+        this.driverClass = "org.postgresql.Driver";
+
     }
     public boolean testDriver(){
         try{

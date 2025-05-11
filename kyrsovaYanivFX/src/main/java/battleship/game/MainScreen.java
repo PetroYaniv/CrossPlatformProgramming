@@ -9,7 +9,6 @@ import javafx.scene.layout.*;
 import javafx.scene.image.*;
 import javafx.stage.Stage;
 
-import java.net.URL;
 
 public class MainScreen extends Application {
 
@@ -79,8 +78,7 @@ public class MainScreen extends Application {
 
 
     public static void main(String[] args) {
-        launch(args);// ПОТІМ ВКЛЮЧИТИ!!!!!
-        //Player player = new Player("Alex");
-       //BattleShipGameHuman.launchGame();
+        launch(args);
+
     }
 }
